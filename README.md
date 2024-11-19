@@ -8,8 +8,8 @@ Welcome to Quantasio! This tool leverages deep learning to approximate solutions
 ### General PDE Solver:
 
 Supports solving temporal problems in:
-1) 2D: Solves equations of the form u(x, y, t).
-2) 3D: Extends to u(x, y, z, t).
+1) 2D: Solves equations of the form u(x, t).
+2) 3D: Extends to u(x, y, t).
 3) 4D: Extends to u(x, y, z, t).
 4) NS Solver: Approximates vector fields (u, v, w)(x, y, z, t) by solving the Navier Stokes Equation.
 
