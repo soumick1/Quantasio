@@ -25,3 +25,5 @@ Visualization:
 
 Visualize the solutions with animations showing the evolution of velocity fields over time.
 Support for rendering vector fields in 2D, 3D, and 4D domains with obstacles.
+
+![](./images/navier_stokes_animation.gif)
