@@ -125,9 +125,9 @@ u_0(x, y, z) = 0, \quad v_0(x, y, z) = 0, \quad w_0(x, y, z) = 0
 
 ### Boundary Conditions:
 1. **Inflow (Uniform Flow):**
-   ```math
+```math
    u(x, 0, z, t) = 1, \quad v(x, 0, z, t) = 0, \quad w(x, 0, z, t) = 0
-   ```
+```
 2. **No-slip condition on obstacle surface:**
    On the spherical obstacle centered at $\( (0.5, 0.5, 0.5) \)$ with radius $\( r = 0.1 \)$,
    ```math
