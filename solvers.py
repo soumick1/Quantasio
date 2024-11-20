@@ -50,7 +50,6 @@ class ResNet3D(nn.Module):
         self.activation = Swish()
 
     def forward(self, x, y, t):
-        # Normalize inputs
         x_norm = (x - 0.5) / 0.2887
         y_norm = (y - 0.5) / 0.2887
         t_norm = (t - 0.5) / 0.2887
@@ -60,7 +59,7 @@ class ResNet3D(nn.Module):
         for layer in self.hidden_layers:
             residual = out
             out = self.activation(layer(out))
-            out = out + residual  # Residual connection
+            out = out + residual  
         out = self.output_layer(out)
         return out
 
@@ -75,7 +74,6 @@ class ResNet4D(nn.Module):
         self.activation = Swish()
 
     def forward(self, x, y, z, t):
-        # Normalize inputs
         x_norm = (x - 0.5) / 0.2887
         y_norm = (y - 0.5) / 0.2887
         z_norm = (z - 0.5) / 0.2887
@@ -93,7 +91,7 @@ class ResNet4D(nn.Module):
 
 class Solver2D:
     def __init__(self, pde_residual, initial_condition_function,
-                 domain_bounds, model_params, training_params):
+                 domain_bounds, model_params, training_params, save_model=False):
         """
         Initializes the solver.
 
@@ -109,8 +107,7 @@ class Solver2D:
         self.domain_bounds = domain_bounds
         self.model_params = model_params
         self.training_params = training_params
-
-        # Initialize the neural network model
+        self.save_model = save_model
         self.model = ResNet2D(num_inputs=2,
                               num_outputs=1,
                               num_hidden_layers=model_params.get('num_hidden_layers', 4),
@@ -198,7 +195,6 @@ class Solver2D:
         for epoch in range(num_epochs):
             self.optimizer.zero_grad()
 
-            # Move data generation inside the loop
             x_f, t_f, x_b, t_b = self.generate_training_data()
 
             loss = self.loss_function(x_f, t_f, x_b, t_b)
@@ -225,7 +221,8 @@ class Solver2D:
             if best_loss - current_loss > min_delta:
                 best_loss = current_loss
                 epochs_no_improve = 0
-                # torch.save(self.model.state_dict(), 'best_model.pth')
+                if save_model:
+                    torch.save(self.model.state_dict(), 'best_model_2D.pth')
             else:
                 epochs_no_improve += 1
 
@@ -277,7 +274,7 @@ class Solver2D:
 
 class Solver3D:
     def __init__(self, pde_residual, initial_condition_function,
-                 domain_bounds, model_params, training_params):
+                 domain_bounds, model_params, training_params, save_model=False):
         """
         Initializes the solver.
 
@@ -293,17 +290,14 @@ class Solver3D:
         self.domain_bounds = domain_bounds
         self.model_params = model_params
         self.training_params = training_params
-
-        # Initialize the neural network model
+        self.save_model = save_model
         self.model = ResNet3D(num_inputs=3,
                               num_outputs=1,
                               num_hidden_layers=model_params.get('num_hidden_layers', 4),
                               num_neurons=model_params.get('num_neurons', 50)).to(device)
 
-        # Set up the optimizer
         self.optimizer = optim.Adam(self.model.parameters(), lr=training_params.get('learning_rate', 1e-3))
 
-        # Loss histories
         self.pde_loss_history = []
         self.bc_loss_history = []
         self.total_loss_history = []
@@ -312,25 +306,22 @@ class Solver3D:
         self.w_pde = 1.0
         self.w_bc = 1.0
 
-    # Define the spatial modulation function ξ(x, y)
+    # Defining the spatial modulation function ξ(x, y)
     def spatial_modulation(self, x, y):
         x_min, x_max = self.domain_bounds['x']
         y_min, y_max = self.domain_bounds['y']
         return (x - x_min) * (x_max - x) * (y - y_min) * (y_max - y)
 
-    # Define the temporal modulation function τ(t)
+    # Defining the temporal modulation function τ(t)
     def temporal_modulation(self, t):
         t_min, t_max = self.domain_bounds['t']
         return (t - t_min)
 
-    # Define the reparameterization function u(x, y, t)
     def reparameterize_solution(self, x, y, t):
-        # Reshape x, y, t to column vectors
         x = x.view(-1, 1)
         y = y.view(-1, 1)
         t = t.view(-1, 1)
 
-        # Neural network output
         N = self.model(x, y, t)
 
         # Initial condition u0(x, y)
@@ -440,7 +431,8 @@ class Solver3D:
                     best_loss = current_loss
                     epochs_no_improve = 0
                     # Optionally, save the model
-                    # torch.save(self.model.state_dict(), 'best_model.pth')
+                    if save_model:
+                        torch.save(self.model.state_dict(), 'best_model_3D.pth')
                 else:
                     epochs_no_improve += 1
 
@@ -475,16 +467,13 @@ class Solver3D:
         fig = plt.figure(figsize=(15, 10))
 
         for idx, t_val in enumerate(time_steps):
-            # Flatten the grid arrays
             X_flat = X.flatten()
             Y_flat = Y.flatten()
             T_flat = t_val * np.ones_like(X_flat)
 
-            # Predict the solution
             u_pred = self.predict(X_flat, Y_flat, T_flat)
             U = u_pred.reshape(X.shape)
 
-            # Plot the solution u(x, y, t) at the current time slice
             ax = fig.add_subplot(3, 3, idx + 1, projection='3d')
             ax.plot_surface(X, Y, U, cmap='viridis')
             ax.set_xlabel('x')
@@ -498,7 +487,6 @@ class Solver3D:
     def plot_loss_history(self):
         plt.figure()
         plt.plot(self.total_loss_history)
-        #plt.yscale('log')
         plt.xlabel('Epoch')
         plt.ylabel('Total Loss')
         plt.ylim(-1.0, max(self.total_loss_history))
@@ -508,7 +496,7 @@ class Solver3D:
 
 class Solver4D:
     def __init__(self, pde_residual, initial_condition_function,
-                 domain_bounds, model_params, training_params):
+                 domain_bounds, model_params, training_params, save_model=False):
         """
         Initializes the solver.
 
@@ -524,17 +512,15 @@ class Solver4D:
         self.domain_bounds = domain_bounds
         self.model_params = model_params
         self.training_params = training_params
+        self.save_model = save_model
 
-        # Initialize the neural network model
         self.model = ResNet4D(num_inputs=4,
                               num_outputs=1,
                               num_hidden_layers=model_params.get('num_hidden_layers', 4),
                               num_neurons=model_params.get('num_neurons', 50)).to(device)
 
-        # Set up the optimizer
         self.optimizer = optim.Adam(self.model.parameters(), lr=training_params.get('learning_rate', 1e-3))
 
-        # Loss histories
         self.pde_loss_history = []
         self.bc_loss_history = []
         self.total_loss_history = []
@@ -543,30 +529,27 @@ class Solver4D:
         self.w_pde = 1.0
         self.w_bc = 1.0
 
-    # Define the spatial modulation function ξ(x, y, z)
+    # Defining the spatial modulation function ξ(x, y, z)
     def spatial_modulation(self, x, y, z):
         x_min, x_max = self.domain_bounds['x']
         y_min, y_max = self.domain_bounds['y']
         z_min, z_max = self.domain_bounds['z']
         return (x - x_min) * (x_max - x) * (y - y_min) * (y_max - y) * (z - z_min) * (z_max - z)
 
-    # Define the temporal modulation function τ(t)
+    # Defining the temporal modulation function τ(t)
     def temporal_modulation(self, t):
         t_min, t_max = self.domain_bounds['t']
         return (t - t_min)
 
-    # Define the reparameterization function u(x, y, z, t)
+    # Defining the reparameterization function u(x, y, z, t)
     def reparameterize_solution(self, x, y, z, t):
-        # Reshape x, y, z, t to column vectors
         x = x.view(-1, 1)
         y = y.view(-1, 1)
         z = z.view(-1, 1)
         t = t.view(-1, 1)
 
-        # Neural network output
         N = self.model(x, y, z, t)
 
-        # Initial condition u0(x, y, z)
         u0 = self.initial_condition_function(x, y, z)
 
         # Modulation functions
@@ -660,7 +643,6 @@ class Solver4D:
             for epoch in range(num_epochs):
                 self.optimizer.zero_grad()
 
-                # Move data generation inside the loop
                 x_f, y_f, z_f, t_f, x_bx, y_bx, z_bx, t_bx, x_by, y_by, z_by, t_by, x_bz, y_bz, z_bz, t_bz = self.generate_training_data()
 
                 loss = self.loss_function(x_f, y_f, z_f, t_f,
@@ -694,7 +676,8 @@ class Solver4D:
                     best_loss = current_loss
                     epochs_no_improve = 0
                     # Optionally, save the model
-                    # torch.save(self.model.state_dict(), 'best_model.pth')
+                    if self.save_model:
+                        torch.save(self.model.state_dict(), 'best_model_4D.pth')
                 else:
                     epochs_no_improve += 1
 
