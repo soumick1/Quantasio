@@ -479,7 +479,7 @@ solver.train()
 solver.plot_loss_history()
 
 
-time_steps = np.linspace(0, 2, 600)
+time_steps = np.linspace(0, 1, 600)
 solver.animate_solution(
     time_steps=time_steps,
     resolution=10,
