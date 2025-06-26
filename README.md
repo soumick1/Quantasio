@@ -1,4 +1,4 @@
-![Python 3.8](https://img.shields.io/badge/python-3.10-green.svg)
+![Python 3.13](https://img.shields.io/badge/python-3.13-green.svg)
 
 # Quantasio: A Generalized Neural Framework for Solving 3D Navier-Stokes Dynamics
 
@@ -150,3 +150,22 @@ The obstacle is represented as a sphere:
 
 ### Visualizing and animating the flow field using Quantasio
 ![](./images/navier_stokes_obstacle.gif)
+
+
+## 📄 Citation
+
+[Paper Link](https://ieeexplore.ieee.org/abstract/document/10927473)
+
+If you find this repository useful in your research, please cite my work as follows:
+
+```bibtex
+@ARTICLE{11045321,
+  author={Sarker, Soumick and Chakraborty, Sudipto},
+  journal={IEEE Transactions on Artificial Intelligence}, 
+  title={Quantasio: A Generalized Neural Framework for Solving 3D Navier-Stokes Dynamics}, 
+  year={2025},
+  volume={},
+  number={},
+  pages={1-10},
+  keywords={Mathematical models;Training;Boundary conditions;Neural networks;Convergence;Accuracy;Modulation;Scalability;Real-time systems;Geometry;Quantasio;Physics-Informed Neural Networks;Partial Differential Equations;Navier-Stokes Equations;Turbulent Flow},
+  doi={10.1109/TAI.2025.3581506}}
