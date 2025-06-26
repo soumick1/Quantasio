@@ -1,6 +1,6 @@
 ![Python 3.8](https://img.shields.io/badge/python-3.10-green.svg)
 
-# Quantasio: A Generalized Neural Framework for Solving Temporal Partial Differential Equations and Navier-Stokes Dynamics in Three Spatial Dimensions
+# Quantasio: A Generalized Neural Framework for Solving 3D Navier-Stokes Dynamics
 
 Welcome to Quantasio! This tool leverages deep learning to approximate solutions for any general temporal PDE as well as fluid dynamics problems using the Navier-Stokes equations. The solver is designed to handle 2D, 3D, and 4D (time-dependent) cases and is capable of solving a range of scenarios from basic flows to turbulent regimes and flows around obstacles.
 
