@@ -159,13 +159,10 @@ The obstacle is represented as a sphere:
 If you find this repository useful in your research, please cite my work as follows:
 
 ```bibtex
-@ARTICLE{11045321,
+@article{sarker2025quantasio,
+  title={Quantasio: A Generalized Neural Framework for Solving 3D Navier-Stokes Dynamics},
   author={Sarker, Soumick and Chakraborty, Sudipto},
-  journal={IEEE Transactions on Artificial Intelligence}, 
-  title={Quantasio: A Generalized Neural Framework for Solving 3D Navier-Stokes Dynamics}, 
+  journal={IEEE Transactions on Artificial Intelligence},
   year={2025},
-  volume={},
-  number={},
-  pages={1-10},
-  keywords={Mathematical models;Training;Boundary conditions;Neural networks;Convergence;Accuracy;Modulation;Scalability;Real-time systems;Geometry;Quantasio;Physics-Informed Neural Networks;Partial Differential Equations;Navier-Stokes Equations;Turbulent Flow},
-  doi={10.1109/TAI.2025.3581506}}
+  publisher={IEEE}
+}
