@@ -154,7 +154,7 @@ The obstacle is represented as a sphere:
 
 ## 📄 Citation
 
-[Paper Link](https://ieeexplore.ieee.org/abstract/document/10927473)
+[Paper Link](https://ieeexplore.ieee.org/abstract/document/11045321)
 
 If you find this repository useful in your research, please cite my work as follows:
 
